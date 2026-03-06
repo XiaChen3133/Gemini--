@@ -1,0 +1,5 @@
+{
+  "name": "Daily Decision Engine",
+  "description": "A minimal daily task recommender based on energy levels.",
+  "requestFramePermissions": []
+}
