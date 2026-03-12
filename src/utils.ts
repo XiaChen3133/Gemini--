@@ -11,13 +11,13 @@ export function daysSince(dateStr: string): number {
 
 export function energyMatch(taskEnergy: TaskEnergyLevel, userEnergy: UserEnergyLevel): number {
   if (userEnergy === 'low') {
-    return ['low', 'medium'].includes(taskEnergy) ? 1 : 0;
+    return taskEnergy === 'low' ? 1 : 0;
   }
   if (userEnergy === 'medium') {
-    return ['low', 'medium'].includes(taskEnergy) ? 1 : 0.8;
+    return taskEnergy === 'medium' ? 1 : (taskEnergy === 'low' ? 0.8 : 0);
   }
   if (userEnergy === 'high') {
-    return 1;
+    return taskEnergy === 'high' ? 1 : (taskEnergy === 'medium' ? 0.8 : 0.6);
   }
   return 0;
 }
@@ -39,12 +39,17 @@ export function recommendTasks(tasks: FocusTask[], goals: Goal[], userEnergy: Us
 
     if (!isAvailable) return false;
 
-    // Energy filter
+    // Energy filter: 
+    // Low: only low
+    // Medium: low + medium
+    // High: all
     let energyPass = true;
     if (userEnergy === 'low') {
-      energyPass = ['low', 'medium'].includes(task.energy);
+      energyPass = task.energy === 'low';
     } else if (userEnergy === 'medium') {
       energyPass = ['low', 'medium'].includes(task.energy);
+    } else if (userEnergy === 'high') {
+      energyPass = true;
     }
     
     return energyPass;

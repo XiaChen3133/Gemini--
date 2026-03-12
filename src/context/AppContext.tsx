@@ -33,6 +33,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       quickTasks: initialQuickTasks,
       userEnergy: null,
       recommendedTasks: [],
+      futureMemo: '',
     };
   });
 
@@ -153,6 +154,10 @@ export function AppProvider({ children }: { children: ReactNode }) {
     setState(prev => ({ ...prev, goals: prev.goals.filter(g => g.goal !== goalName) }));
   };
 
+  const updateFutureMemo = (memo: string) => {
+    setState(prev => ({ ...prev, futureMemo: memo }));
+  };
+
   const exportData = () => {
     const dataStr = JSON.stringify(state, null, 2);
     const blob = new Blob([dataStr], { type: 'application/json' });
@@ -197,30 +202,13 @@ export function AppProvider({ children }: { children: ReactNode }) {
       addGoal,
       updateGoal,
       deleteGoal,
+      updateFutureMemo,
       exportData,
       importData
     }}>
       {children}
     </AppContext.Provider>
   );
-}
-
-interface AppContextType {
-  state: AppState;
-  setEnergy: (energy: UserEnergyLevel) => void;
-  addFocusTask: (task: FocusTask) => void;
-  updateFocusTask: (task: FocusTask) => void;
-  deleteFocusTask: (id: string) => void;
-  completeFocusTask: (id: string) => void;
-  addDecisionTask: (title: string, priority: number) => void;
-  completeDecisionTask: (id: string) => void;
-  addQuickTask: (title: string) => void;
-  completeQuickTask: (id: string) => void;
-  addGoal: (goal: Goal) => void;
-  updateGoal: (goal: Goal) => void;
-  deleteGoal: (goalName: string) => void;
-  exportData: () => void;
-  importData: (jsonString: string) => void;
 }
 
 export function useApp() {

@@ -1,9 +1,9 @@
 import React, { useRef } from 'react';
 import { useApp } from '../context/AppContext';
-import { Download, Upload, Database, AlertTriangle } from 'lucide-react';
+import { Download, Upload, Database, AlertTriangle, Calendar } from 'lucide-react';
 
 export function SettingsPage() {
-  const { exportData, importData } = useApp();
+  const { state, exportData, importData, updateFutureMemo } = useApp();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -32,6 +32,26 @@ export function SettingsPage() {
         <h1 className="text-xl font-bold text-[#1A6840]">数据管理</h1>
         <p className="text-gray-400 text-[10px] font-bold uppercase tracking-widest mt-1">BACKUP AND RESTORE YOUR DATA</p>
       </header>
+
+      <div className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm">
+        <div className="flex items-start space-x-4 mb-4">
+          <div className="p-3 bg-[#1A6840]/5 text-[#1A6840] rounded-xl">
+            <Calendar size={24} />
+          </div>
+          <div>
+            <h3 className="text-base font-bold text-gray-900">未来待办 / 备忘</h3>
+            <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mt-1 leading-relaxed">
+              记录不属于日常队列的长期计划或灵感。
+            </p>
+          </div>
+        </div>
+        <textarea
+          value={state.futureMemo}
+          onChange={(e) => updateFutureMemo(e.target.value)}
+          placeholder="在这里输入你的未来待办或备忘..."
+          className="w-full h-40 p-4 bg-gray-50 border border-gray-100 rounded-xl text-xs text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-1 focus:ring-[#1A6840]/40 resize-none transition-all"
+        />
+      </div>
 
       <div className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm">
         <div className="flex items-start space-x-4 mb-6">

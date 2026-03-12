@@ -38,4 +38,5 @@ export interface AppState {
   quickTasks: QuickTask[];
   userEnergy: UserEnergyLevel | null;
   recommendedTasks: FocusTask[];
+  futureMemo: string;
 }
