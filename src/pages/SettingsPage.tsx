@@ -1,9 +1,9 @@
 import React, { useRef } from 'react';
 import { useApp } from '../context/AppContext';
-import { Download, Upload, Database, AlertTriangle, Calendar } from 'lucide-react';
+import { Download, Upload, Database, AlertTriangle, Calendar, Cloud, RefreshCw } from 'lucide-react';
 
 export function SettingsPage() {
-  const { state, exportData, importData, updateFutureMemo } = useApp();
+  const { state, exportData, importData, updateFutureMemo, updateUserId } = useApp();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -51,6 +51,42 @@ export function SettingsPage() {
           placeholder="在这里输入你的未来待办或备忘..."
           className="w-full h-40 p-4 bg-gray-50 border border-gray-100 rounded-xl text-xs text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-1 focus:ring-[#1A6840]/40 resize-none transition-all"
         />
+      </div>
+
+      <div className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm">
+        <div className="flex items-start space-x-4 mb-6">
+          <div className="p-3 bg-blue-50 text-blue-600 rounded-xl">
+            <Cloud size={24} />
+          </div>
+          <div>
+            <h3 className="text-base font-bold text-gray-900">云端同步 (Beta)</h3>
+            <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mt-1 leading-relaxed">
+              设置同步 ID 以在不同设备或链接间同步数据。
+            </p>
+          </div>
+        </div>
+
+        <div className="space-y-4">
+          <div className="flex space-x-2">
+            <input
+              type="text"
+              value={state.userId || ''}
+              onChange={(e) => updateUserId(e.target.value)}
+              placeholder="输入你的同步 ID"
+              className="flex-1 p-3 bg-gray-50 border border-gray-100 rounded-xl text-xs focus:outline-none focus:ring-1 focus:ring-blue-400"
+            />
+            <button 
+              onClick={() => window.location.reload()}
+              className="p-3 bg-blue-50 text-blue-600 rounded-xl hover:bg-blue-100 transition-colors"
+              title="强制同步"
+            >
+              <RefreshCw size={20} />
+            </button>
+          </div>
+          <p className="text-[9px] text-gray-400 italic">
+            * 默认 ID 为 'default_user'。修改后页面将自动保存并尝试同步。
+          </p>
+        </div>
       </div>
 
       <div className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm">

@@ -32,6 +32,7 @@ export interface QuickTask {
 }
 
 export interface AppState {
+  userId?: string;
   focusTasks: FocusTask[];
   goals: Goal[];
   decisionTasks: DecisionTask[];

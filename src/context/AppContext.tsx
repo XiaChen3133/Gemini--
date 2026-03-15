@@ -17,6 +17,10 @@ interface AppContextType {
   addGoal: (goal: Goal) => void;
   updateGoal: (goal: Goal) => void;
   deleteGoal: (goalName: string) => void;
+  updateFutureMemo: (memo: string) => void;
+  updateUserId: (id: string) => void;
+  exportData: () => void;
+  importData: (jsonString: string) => void;
 }
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
@@ -27,6 +31,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [state, setState] = useState<AppState>(() => {
     const stored = localStorage.getItem(STORAGE_KEY);
     return stored ? JSON.parse(stored) : {
+      userId: 'default_user',
       focusTasks: initialFocusTasks,
       goals: initialGoals,
       decisionTasks: initialDecisionTasks,
@@ -37,8 +42,42 @@ export function AppProvider({ children }: { children: ReactNode }) {
     };
   });
 
+  // Load from backend on mount
+  useEffect(() => {
+    const loadFromBackend = async () => {
+      const userId = state.userId || 'default_user';
+      try {
+        const response = await fetch(`/api/state/${userId}`);
+        if (response.ok) {
+          const backendState = await response.json();
+          setState(prev => ({ ...backendState, userId: prev.userId })); // Keep current userId
+        }
+      } catch (e) {
+        console.error('Failed to load from backend:', e);
+      }
+    };
+    loadFromBackend();
+  }, []);
+
+  // Save to backend and localStorage
   useEffect(() => {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    
+    const saveToBackend = async () => {
+      const userId = state.userId || 'default_user';
+      try {
+        await fetch(`/api/state/${userId}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(state)
+        });
+      } catch (e) {
+        console.error('Failed to save to backend:', e);
+      }
+    };
+
+    const timeoutId = setTimeout(saveToBackend, 1000); // Debounce 1s
+    return () => clearTimeout(timeoutId);
   }, [state]);
 
   // Reactivate recurring tasks whose period has passed
@@ -158,6 +197,10 @@ export function AppProvider({ children }: { children: ReactNode }) {
     setState(prev => ({ ...prev, futureMemo: memo }));
   };
 
+  const updateUserId = (id: string) => {
+    setState(prev => ({ ...prev, userId: id }));
+  };
+
   const exportData = () => {
     const dataStr = JSON.stringify(state, null, 2);
     const blob = new Blob([dataStr], { type: 'application/json' });
@@ -203,6 +246,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       updateGoal,
       deleteGoal,
       updateFutureMemo,
+      updateUserId,
       exportData,
       importData
     }}>

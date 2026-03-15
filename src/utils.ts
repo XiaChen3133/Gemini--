@@ -41,15 +41,15 @@ export function recommendTasks(tasks: FocusTask[], goals: Goal[], userEnergy: Us
 
     // Energy filter: 
     // Low: only low
-    // Medium: low + medium
-    // High: all
+    // Medium: only medium
+    // High: only high
     let energyPass = true;
     if (userEnergy === 'low') {
       energyPass = task.energy === 'low';
     } else if (userEnergy === 'medium') {
-      energyPass = ['low', 'medium'].includes(task.energy);
+      energyPass = task.energy === 'medium';
     } else if (userEnergy === 'high') {
-      energyPass = true;
+      energyPass = task.energy === 'high';
     }
     
     return energyPass;

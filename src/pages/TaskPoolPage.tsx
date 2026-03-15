@@ -2,11 +2,11 @@ import React, { useState } from 'react';
 import { useApp } from '../context/AppContext';
 import { TaskForm } from '../components/TaskForm';
 import { FocusTask } from '../types';
-import { Plus, Search, Edit2, Trash2 } from 'lucide-react';
+import { Plus, Search, Edit2, Trash2, Check } from 'lucide-react';
 import { clsx } from 'clsx';
 
 export function TaskPoolPage() {
-  const { state, addFocusTask, updateFocusTask, deleteFocusTask } = useApp();
+  const { state, addFocusTask, updateFocusTask, deleteFocusTask, completeFocusTask } = useApp();
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [editingTask, setEditingTask] = useState<FocusTask | null>(null);
   const [filter, setFilter] = useState('');
@@ -94,7 +94,14 @@ export function TaskPoolPage() {
 
       <div className="space-y-3 pb-20">
         {filteredTasks.map(task => (
-          <div key={task.id} className="bg-white p-5 rounded-2xl border border-gray-100 flex justify-between items-start group hover:border-[#1A6840]/20 transition-all shadow-sm">
+          <div 
+            key={task.id} 
+            className={clsx(
+              "bg-white p-5 rounded-2xl border flex justify-between items-start group hover:border-[#1A6840]/20 transition-all shadow-sm",
+              task.is_completed ? "opacity-60 border-gray-100" : "border-gray-100 cursor-pointer"
+            )}
+            onClick={() => !task.is_completed && completeFocusTask(task.id)}
+          >
             <div className="flex-1 min-w-0 mr-4">
               <div className="flex items-center space-x-2 mb-2">
                 <span className={clsx(
@@ -113,7 +120,12 @@ export function TaskPoolPage() {
                 <span className="text-xs text-gray-200">•</span>
                 <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">{task.goal}</span>
               </div>
-              <h3 className="text-base font-medium text-gray-900 truncate mb-2">{task.title}</h3>
+              <h3 className={clsx(
+                "text-base font-medium truncate mb-2",
+                task.is_completed ? "text-gray-400 line-through" : "text-gray-900"
+              )}>
+                {task.title}
+              </h3>
               <div className="flex items-center text-[10px] font-bold text-gray-400 uppercase tracking-wider space-x-3">
                 <span>PRIORITY {task.priority}</span>
                 <span>{task.estimated_time} MIN</span>
@@ -121,7 +133,16 @@ export function TaskPoolPage() {
               </div>
             </div>
             
-            <div className="flex flex-col space-y-3">
+            <div className="flex flex-col space-y-3" onClick={(e) => e.stopPropagation()}>
+              {!task.is_completed && (
+                <button 
+                  onClick={() => completeFocusTask(task.id)} 
+                  className="p-2 bg-[#1A6840] text-white rounded-lg hover:bg-[#1A6840]/90 transition-colors"
+                  title="完成任务"
+                >
+                  <Check size={16} />
+                </button>
+              )}
               <button 
                 onClick={() => handleEdit(task)} 
                 className="p-2 bg-[#1A6840]/5 text-[#1A6840]/60 rounded-lg hover:bg-[#1A6840]/10 hover:text-[#1A6840] transition-colors"
